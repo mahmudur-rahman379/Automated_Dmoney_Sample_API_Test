@@ -1,0 +1,368 @@
+{
+	"info": {
+		"_postman_id": "56a844fe-0d59-44ef-8bdd-9e9eede98e33",
+		"name": "Dmoney_API_Test",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "33497263"
+	},
+	"item": [
+		{
+			"name": "Login_as_a-customer",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonresponsedata=pm.response.json()\r",
+							"\r",
+							"var token=jsonresponsedata.token\r",
+							"console.log(token)\r",
+							"pm.collectionVariables.set(\"token\",token)\r",
+							"\r",
+							"pm.test(\"Customer can login successfully by valid credential\", function () {\r",
+							"    var jsonresponsedata = pm.response.json();\r",
+							"    pm.expect(jsonresponsedata.message).contains(\"Login successfully\");\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\":\"salman@roadtocareer.net\",\r\n    \"password\":\"1234\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BaseURL}}/user/login",
+					"host": [
+						"{{BaseURL}}"
+					],
+					"path": [
+						"user",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "User Creation",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var ranid=_.random(10000000,99999999)\r",
+							"prefix=\"015\"\r",
+							"var PhoneNumber=prefix+ranid\r",
+							"pm.collectionVariables.set(\"PhoneNumber\",PhoneNumber)"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonresponsedata=pm.response.json()\r",
+							"var id=jsonresponsedata.user.id\r",
+							"pm.collectionVariables.set(\"Customer id\",id)\r",
+							"\r",
+							"\r",
+							"pm.test(\"User created using valid credential\", function () {\r",
+							"    var jsonresponsedata = pm.response.json();\r",
+							"    pm.expect(jsonresponsedata.message).contains(\"User created\");\r",
+							"});\r",
+							"pm.test(\"New customer is Created\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-AUTH-SECRET-KEY",
+						"value": "ROADTOSDET"
+					},
+					{
+						"key": "Authorization",
+						"value": "{{token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\":\"{{$randomFirstName}}}}\",\r\n    \"email\":\"{{$randomEmail}}\",\r\n    \"password\":\"1456\",\r\n    \"phone_number\":\"{{PhoneNumber}}\",\r\n    \"nid\":\"123456789\",\r\n    \"role\":\"Customer\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BaseURL}}/user/create",
+					"host": [
+						"{{BaseURL}}"
+					],
+					"path": [
+						"user",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Search_customer_list",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{token}}"
+					}
+				],
+				"url": {
+					"raw": "{{BaseURL}}/user/list",
+					"host": [
+						"{{BaseURL}}"
+					],
+					"path": [
+						"user",
+						"list"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Search_customer_id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Find customer by searching customer id\", function () {\r",
+							"    var jsonresponsedata = pm.response.json();\r",
+							"    pm.expect(jsonresponsedata.message).contains(\"User found\");\r",
+							"});\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BaseURL}}/user/search/id/{{Customer id}}",
+					"host": [
+						"{{BaseURL}}"
+					],
+					"path": [
+						"user",
+						"search",
+						"id",
+						"{{Customer id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update_customer_credential",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{token}}"
+					},
+					{
+						"key": "X-AUTH-SECRET-KEY",
+						"value": "ROADTOSDET"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\":\"alexandro\",\r\n    \"email\":\"alexandro{{Customer id}}@gmail.com\",\r\n    \"password\":\"9344\",\r\n    \"phone_number\":\"01541635739\",\r\n    \"nid\":\"123456789\",\r\n    \"role\":\"Customer\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BaseURL}}/user/update/{{Customer id}}",
+					"host": [
+						"{{BaseURL}}"
+					],
+					"path": [
+						"user",
+						"update",
+						"{{Customer id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete_custmer_from_customer_list",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{token}}"
+					},
+					{
+						"key": "X-AUTH-SECRET-KEY",
+						"value": "ROADTOSDET"
+					}
+				],
+				"url": {
+					"raw": "{{BaseURL}}/user/delete/{{Customer id}}",
+					"host": [
+						"{{BaseURL}}"
+					],
+					"path": [
+						"user",
+						"delete",
+						"{{Customer id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update_cusomer_single_key_value",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{token}}"
+					},
+					{
+						"key": "X-AUTH-SECRET-KEY",
+						"value": "ROADTOSDET"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\":\"salman31@roadtocareer.net\"\r\n\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BaseURL}}/user/update/31",
+					"host": [
+						"{{BaseURL}}"
+					],
+					"path": [
+						"user",
+						"update",
+						"31"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "token",
+			"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZGVudGlmaWVyIjoic2FsbWFuQHJvYWR0b2NhcmVlci5uZXQiLCJwYXNzd29yZCI6IjEyMzQiLCJpYXQiOjE3MTU4MDE5MDEsImV4cCI6MTcxNTgwNTUwMX0.E_-ciNR80lhvY0El0ahrRwXsa_a3H8WDw0Soj_2qHKA"
+		},
+		{
+			"key": "PhoneNumber",
+			"value": "01595110634"
+		},
+		{
+			"key": "BaseURL",
+			"value": "http://dmoney.roadtocareer.net",
+			"type": "string"
+		},
+		{
+			"key": "Customer id",
+			"value": 1983
+		}
+	]
+}
